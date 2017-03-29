@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+		#content{height: 800px;width: 100%;background-color: #ccc;}
+		ul{padding:0;margin:0px;}
+		li{list-style: none;}
+		#fixedMenu {position: fixed;right:50px;top:50%;border:1px solid red;}
+		#fixedMenu ul{width: 50px;background-color: #fff;}
+		#fixedMenu ul li{margin: 3px 0px;border:1px solid #ccc;height: 50px;}
+		
+		.nav1{background-color: red;}
+		.nav2{background-color: blue;}
+		.nav3{background-color: green;}
+		.nav4{background-color: #ccc;}
+		.nav5{background-color: yellow;}
+		.nav6{background-color: #f40;}
+		.back{background-color: black;}
+		.d1{height: 400px;margin:20px 0px;}
+
+	</style>
+</head>
+<body>
+	<div id="content">
+		<div>
+			<p>1</p>
+			<p>1</p>
+			<p>1</p>
+			<p>1</p>
+			<p>1</p>
+			<p>1</p>
+			<p>1</p>
+		</div>
+		<div class="nav d1 nav1">nav1</div>
+		<div class="nav d1 nav2">nav2</div>
+		<div class="nav d1 nav3">nav3</div>
+		<div class="nav d1 nav4">nav4</div>
+		<div class="nav d1 nav5">nav5</div>
+		<div class="nav d1 nav6">nav6</div>
+	</div>
+
+
+	<div id="fixedMenu">
+		<ul>
+			<li><a data-link = "nav1" href="javascript:void(0);"><span>导航1</span></a></li>
+			<li><a data-link = "nav2" href="javascript:void(0);"><span>导航2</span></a></li>
+			<li><a data-link = "nav3" href="javascript:void(0);"><span>导航3</span></a></li>
+			<li><a data-link = "nav4" href="javascript:void(0);"><span>导航4</span></a></li>
+			<li><a data-link = "nav5" href="javascript:void(0);"><span>导航5</span></a></li>
+			<li><a data-link = "nav6" href="javascript:void(0);"><span>导航6</span></a></li>
+		</ul>
+	</div>
+
+	<script>
+		var maxTop = document.body.scrollHeight- document.documentElement.clientHeight;
+		var timer  = 0;
+		function myscrollTo(y){
+			clearInterval(timer);
+			y = y > maxTop ? maxTop : y;
+			//debugger;
+			var distance = y - document.body.scrollTop;// 要变化的整体长度
+			var dy = 5;
+
+			timer = setInterval(function(){
+				if(document.body.scrollTop-y == 0){
+					// window.scrollTo(0,y);
+					// console.info(y);
+					clearInterval(timer);
+				}
+				else{
+					var dy = (y - document.body.scrollTop)/5 ;
+					dy = dy > 0 ? Math.ceil (dy) : Math.floor(dy);
+
+					var newY = document.body.scrollTop + dy;
+
+					console.info("步长:"+dy + "新坐标:"+newY +"目标："+y)
+
+					window.scrollTo(0,newY);
+				}
+			},50);
+		}
+
+		var m = document.getElementById('fixedMenu');
+		var alinks = m.getElementsByTagName('a');
+		for (var i = alinks.length - 1; i >= 0; i--) {
+			alinks[i].onclick =function(){
+				var className = this.getAttribute("data-link") ;
+				var div = document.querySelector("."+className) ;
+				console.info(div.offsetTop,document.body.scrollTop);
+				//window.scrollTo(0,div.offsetTop)
+				myscrollTo(div.offsetTop)
+			}
+		}
+
+		window.onscroll = function(){
+			var navs = document.querySelectorAll(".nav") ;
+			console.info(document.body.scrollTop);
+			for(var i = 0; i < navs.length; i++) {
+				console.info(i+":" + (navs[i].offsetTop-document.body.scrollTop  ) );
+				if( navs[i].offsetTop-document.body.scrollTop < 0 && navs[i+1].offsetTop-document.body.scrollTop > 0 ){
+				
+					console.info("第"+(i+2)+"个显示")
+					if( alinks[i+1] ){
+						for (var j = 0; j < alinks.length; j++) {
+							alinks[j].className = ""
+						}
+						alinks[i+1].className = "back";
+					}
+					break;
+
+				}
+			}
+			if(i == navs.length){
+				for (var j = 0; j < alinks.length; j++) 
+				{
+					alinks[j].className = ""
+				}
+				alinks[0].className = "back";
+			}
+			
+		}
+
+		function FixedMenu(date) {
+			
+		}
+		FixedMenu.prototype.render = function(){
+
+		}
+	</script>
+</body>
+</html>
