@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+		.img{
+			margin:20px;
+			position:relative;
+			box-sizing: 
+			content-box;height:191px; 
+			width:315px;
+			border:2px solid #ccc;padding:5px;
+			float: left;
+
+		}
+		img{height:191px; width:315px;}
+		.txtinfo{color:#fff;position: absolute;top:5px;left:5px;height:191px; width:315px;background-color: rgba(0,0,0,.5);
+		}
+
+
+		.in_bottom_top{ animation:in_bottom_top .5s linear 0s forwards; }
+		.out_bottom_top{ animation:out_bottom_top .5s linear 0s forwards; }
+		.in_right_left{ animation:in_right_left  .5s linear 0s forwards; }
+		.out_right_left{ animation:out_right_left  .5s linear 0s forwards; }
+		
+
+		.top          { transform-origin: center    top;}
+		.bottom       { transform-origin: center bottom;}
+		.left         { transform-origin: left   center;}
+		.right        { transform-origin: right  center;}
+
+		.fadout-top{}
+
+		@keyframes out_bottom_top{
+			0%  {transform:perspective(1000px) rotateX(0deg);}
+			100%{transform:perspective(1000px) rotateX(90deg); }
+		}
+		@keyframes in_bottom_top{
+			0%  {transform:perspective(1000px) rotateX(90deg);}
+			100%{transform:perspective(1000px) rotateX(0deg); }
+		}
+		@keyframes out_right_left{
+			0%  {transform:perspective(1000px) rotateY(0deg);}
+			100%{transform:perspective(1000px) rotateY(90deg); }
+		}
+		@keyframes in_right_left{
+			0%  {transform:perspective(1000px) rotateY(90deg);}
+			100%{transform:perspective(1000px) rotateY(0deg); }
+		}	
+	</style>
+	<script src="./资料/js/jquery/jquery-2.0.2.js"></script>
+</head>
+<body>
+	<section>
+		<div class="img">
+			<img src="资料/img/明月几时有.png" alt="">
+			<div class="txtinfo">这里说明，有一个虫子，现在在树叶上休息</div>
+		</div>
+
+		<div class="img">
+			<img src="资料/img/明月几时有.png" alt="">
+			<div class="txtinfo">这里说明，有一个虫子，现在在树叶上休息</div>
+		</div>
+
+		<div class="img">
+			<img src="资料/img/明月几时有.png" alt="">
+			<div class="txtinfo">这里说明，有一个虫子，现在在树叶上休息</div>
+		</div>
+
+		<div class="img">
+			<img src="资料/img/明月几时有.png" alt="">
+			<div class="txtinfo">这里说明，有一个虫子，现在在树叶上休息</div>
+		</div>
+
+		<div class="img">
+			<img src="资料/img/明月几时有.png" alt="">
+			<div class="txtinfo">这里说明，有一个虫子，现在在树叶上休息</div>
+		</div>
+	</section>
+
+	<script>	
+
+		$(".img").on("mouseenter",function(e){
+			console.info(this);
+	
+			var r = checkDirection.call(this,e);
+			console.info("进入",r,$(this).find(".txtinfo"));
+			dir = r.dir;
+			var info = $(this).find(".txtinfo");
+			info.attr("class","txtinfo");
+			info.addClass(r.dir);
+			(r.dir ==="left" || r.dir ==="right") ? info.addClass("in_right_left") : info.addClass("in_bottom_top");
+		})
+
+		$(".img").on("mouseleave",function(e){
+
+	
+			var r = checkDirection.call(this,e);
+			console.info("离开",r);
+			var info = $(this).find(".txtinfo");
+			info.attr("class","txtinfo");
+			info.addClass(r.dir);
+			if(r.dir ==="left" || r.dir ==="right")
+				info.addClass("out_right_left");
+			else{
+				info.addClass("out_bottom_top");
+			}
+
+			
+		});
+
+		//检查方向
+		function checkDirection(pointAfter){
+
+			var box = {};
+			box.minX=$(this).offset().left; 
+			box.maxX=box.minX + $(this).innerWidth();
+			box.minY=$(this).offset().top,
+			box.maxY=box.minY + $(this).innerHeight();
+			
+
+			var result = {"dir":"bottom","d":box.maxX} ;// 默认方向
+			//统计四个方向的距离
+			//下边
+			var r = {};
+			r.bottom = Math.abs(box.maxY - pointAfter.clientY );
+			//上边
+			r.top    = Math.abs(box.minY - pointAfter.clientY );
+
+			//左边
+			r.left   = Math.abs(box.minX - pointAfter.clientX );
+			//右边
+			r.right  = Math.abs(box.maxX - pointAfter.clientX );
+
+			console.info(box,pointAfter,r);
+			for(var p in r){
+				if(r[p] < result.d){
+					result.d = r[p];
+					result.dir = p;
+				}
+			}
+			return result;
+			//console.info(r,result.dir,result.d);
+		}
+	</script>
+</body>
+</html>
