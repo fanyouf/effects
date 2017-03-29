@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>仿百度菜单滑动效果</title>
+	<style>
+		nav{position: relative; line-height: 50px;background-color: #f40;}
+		ul,li{list-style: none;padding: 0;margin: 0;}
+		li{display: inline-block;padding: 0 10px;position: relative;}
+		li.current{background-color: blue;}
+		.slider{top:0;left:70px;position: absolute;height: 50px;width: 50px;background-color: blue;}
+	</style>
+</head>
+<body>
+	<nav >
+		
+		<ul id="nav">
+		<div id="slider" class="slider">
+		</div>
+			<li class="current">html5</li>
+			<li>css</li>
+			<li>js</li>
+			<li>less</li>
+			<li>angluar.js</li>
+			<li>vue.js</li>
+			<li>jquery.js</li>
+		</ul>
+	</nav>
+	<script>
+		var slider = document.getElementById('slider');
+		var lis = document.getElementsByTagName("li");
+		var timer = 0;
+		for (var i = 0; i < lis.length; i++) {
+			lis[i].addEventListener("mouseenter",function(e){
+				console.info(this);
+				goHere(this);
+			})
+		}
+
+		function goHere(obj){
+			clearInterval(timer);		
+			timer = setInterval(function(){
+			var eleWidth = slider.offsetWidth;
+			var targetWidth = obj.offsetWidth;
+
+			var eleLeft = slider.offsetLeft;
+			var targetLeft = obj.offsetLeft;			
+				var d_left = (targetLeft - eleLeft)/5;
+				d_left = d_left > 0 ? Math.ceil(d_left) :  Math.floor(d_left);
+				var d_width = (targetWidth - eleWidth)/5;
+
+				d_width = d_width > 0 ? Math.ceil(d_width) :  Math.floor(d_width)
+console.info("目标位置" ,eleLeft,targetLeft);
+
+console.info("目标步长" ,d_left,d_width);
+
+				if(d_left !=0 )
+					slider.style.left = (eleLeft + d_left) + "px"
+
+				if(d_width != 0)
+					slider.style.width = (eleWidth + d_width) + "px"
+
+				if(d_left === 0 && d_width === 0){
+					clearInterval(timer);
+				}
+
+
+			},25)
+		}
+	</script>
+</body>
+</html>
