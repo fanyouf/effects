@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style>
+			
+			
+			.circle1{
+				width:400px;
+				height:400px;
+				border:1px solid #000;
+			}
+			.circle2{
+				width:200px;
+				height:200px;
+				border:1px solid #000;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>canvas画圆</h1>
+		
+		<div class="circle circle1">
+			<!--<canvas id="can" width="200" height="200"></canvas>-->
+		</div>
+		
+		<div class="circle circle2">
+			<!--<canvas id="can" width="200" height="200"></canvas>-->
+		</div>
+		
+		<script type="text/javascript">
+			
+			
+			//默认要求外层的dom元素是正方形
+			function Circle(selector,setting){
+				
+				var direction = {
+					"right"  : 0,
+					"left"   : Math.PI,
+					"top"    : -Math.PI/2,
+					"bottom" : Math.PI/2
+				}
+				
+				var defaultsetting={
+					maxX:88,			    //默认的百分比的进度 88%
+					frontColor:"#ff0000",   // 前景色 默认是红色 
+					backgroundColor:"#999", // 背景色 默认是红色
+					fontsize:20,			//默认字的大小
+					startDirection:"right",  //从3点方向开始，顺时针
+					linewidth:10,			//线条的粗细
+				}
+				
+				for(var p in defaultsetting){
+					if(setting[p] != undefined){
+						defaultsetting[p] = setting[p];
+					}
+				}
+				
+				var circle = document.querySelector(selector);
+				
+				var w = circle.offsetWidth;
+				var o = { x: w/2 , y : w/2 , r: w/2-defaultsetting.linewidth} ; // 圆心坐标
+				
+				
+				var can = document.createElement("canvas");
+				
+				can.setAttribute("width",w+"px");
+				can.setAttribute("height",w+"px");
+				//can.style.height="200px";
+				
+				circle.appendChild(can);
+				
+				var ctx = can.getContext("2d");
+				var x = 0; //当前的百分比值
+				var maxX = defaultsetting.maxX;
+				var y = 0; //弧度
+				
+				//策略模式
+				var startPoint = direction [ defaultsetting.startDirection ] || 0;
+			
+			
+				var timer = setInterval(function(){
+					x++;
+					if(x >= maxX){
+						clearInterval(timer)
+					}
+					y = startPoint +  2*Math.PI * x / 100
+	
+					ctx.clearRect(0,0,w,w);
+					
+					ctx.lineWidth = defaultsetting.linewidth;			//线条粗细
+					ctx.beginPath();
+					ctx.strokeStyle= defaultsetting.frontColor;  //前景色线条颜色
+					ctx.arc(o.x,o.y,o.r,startPoint,y);    //前景色
+					ctx.stroke();
+					
+					ctx.beginPath();
+					ctx.strokeStyle= defaultsetting.backgroundColor;    //背景色 线条颜色
+					ctx.arc(o.x,o.y,o.r,y,2*Math.PI+startPoint);   //背景色
+					ctx.stroke();
+					
+					ctx.textAlign="center";
+					ctx.textBaseline = "middle";
+					ctx.font=defaultsetting.fontsize +"px 微软雅黑";
+	  				ctx.fillText(x+"%",o.x,o.x);
+					
+				},1000/25)
+				
+				
+			}
+			
+			var c1 = new Circle(".circle1",{
+					maxX:88,			    //默认的百分比的进度 88%
+					frontColor:"#ff0000",   // 前景色 默认是红色 
+					backgroundColor:"#999", // 背景色 默认是红色
+					fontsize:20,			//默认字的大小
+					startDirection:"top",  //从3点方向开始，顺时针
+					linewidth:10,			//线条的粗细
+				});
+			var c1 = new Circle(".circle2",{
+					maxX:66,			    //默认的百分比的进度 88%
+					frontColor:"#00ff00",   // 前景色 默认是红色 
+					backgroundColor:"#000", // 背景色 默认是红色
+					fontsize:40,			//默认字的大小
+					startDirection:"left1",  //从3点方向开始，顺时针
+					linewidth:20,			//线条的粗细
+				});
+			
+			
+			
+
+//			ctx.strokeStyle="#0000ff";  //线条颜色
+//			ctx.beginPath();
+//			ctx.arc(100,75,50,0,2*Math.PI);
+//			ctx.stroke();
+//			
+//			
+//			ctx.font="20px 微软雅黑";
+//			ctx.fillText("Hello World!",10,50);
+
+		</script>
+	</body>
+</html>

@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style>
+			
+			body{
+				background-color: #fff;
+			}
+			#can{
+				background-color: #333;
+				display: block;
+				margin:50px auto;
+			}
+		</style>
+	</head>
+	<body>
+		<canvas id="can" width="500" height="500">
+			
+		</canvas>
+		<script src="unit.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			
+			
+			
+			
+			
+			function Plane(){
+				//坐标，画布的中心处
+				this.x = 250;	//坐标
+				this.y = 250;	//坐标
+				
+				this.dx = 0;
+				this.dy = 0;
+				
+				this.img = new Image();
+				this.img.src ="plane2.png";
+				this.rotate = 0;
+			}
+			
+			Plane.prototype={
+				constructor:Plane,
+				render:function(){
+					//把image图像通过canvas画出来
+					
+					game.ctx.save();
+					game.ctx.translate(this.x,this.y);//把画布的中心移动到飞机的位置
+					game.ctx.rotate( this.rotate);
+					game.ctx.drawImage(this.img,-16,-16);
+					
+					game.ctx.restore();
+				},
+				move:function(){
+					
+					this.x += this.dx;
+					this.y += this.dy;
+						
+					this.x = Math.max(0,this.x);
+					this.x = Math.min(500-32,this.x);
+					
+					this.y = Math.max(0,this.y);
+					this.y = Math.min(500-32,this.y);
+					
+					
+					if(this.dx > 0  &&  this.dy > 0){//右下
+							this.rotate = Math.PI*3/4
+						}
+					else if(this.dx > 0  &&  this.dy < 0){//右上
+						this.rotate = Math.PI*1/4
+					}
+					else if(this.dx < 0  &&  this.dy < 0){//左上
+						this.rotate = Math.PI*7/4
+					}
+					else if(this.dx < 0  &&  this.dy > 0){//左下
+						this.rotate = Math.PI*5/4
+					}
+					else if(this.dx > 0 && this.dy==0){ //右
+						this.rotate = Math.PI*1/2
+					}
+					else if(this.dx < 0  &&  this.dy == 0){//左
+						this.rotate = Math.PI*3/2
+					}
+					else if(this.dx ==0   && this.dy > 0){ //下
+						this.rotate = Math.PI
+					}
+					else if(this.dx == 0  &&  this.dy < 0){//上
+						this.rotate = 0
+					}
+					
+					this.render();
+					
+				}
+			}
+			function Bullet(){
+				
+				//让子弹先出现在左上角
+				
+				this.x = unit.r(50,100);	//坐标
+				this.y = unit.r(50,100);	//坐标
+				this.dx = unit.r(1,5) ; //水平方向的速度
+				this.dy = unit.r(1,5) ; //垂直方向的速度
+				this.r = unit.r(5,15);			//子弹的半径
+				
+				//this.color = "rgb("+ unit.r(0,255)+","+unit.r(0,255)+","+unit.r(0,255)+")";
+				this.color = "white";
+			}
+			Bullet.prototype={
+				constructor:Bullet,
+				render : function(){
+				
+				
+					game.ctx.beginPath();
+					game.ctx.arc(this.x,this.y,this.r,0,2*Math.PI);
+					game.ctx.closePath();
+					game.ctx.fillStyle= this.color;
+					game.ctx.fill();
+
+					//ctx.fill();
+				},
+				move:function(){
+					if(this.x > 500 || this.x < 0){
+						this.dx = -1*this.dx;
+						
+					}
+					if(this.y > 500 || this.y < 0){
+						this.dy = -1*this.dy;
+					}
+					this.x += this.dx;
+					this.y += this.dy;
+					
+					this.render();
+					
+				}
+			}
+			
+			
+			var game = {
+				plane: new Plane(),
+				ctx:document.getElementById("can").getContext("2d"), //面布
+				bulletNumber:30, //子弹数量
+				frameIndex:0,	//帧频
+				actor:[],		//演员
+				addEvent:function(){
+					//给body加keydown事件
+					var that = this;
+					document.body.addEventListener("keydown",function(e){
+						if(e.keyCode == 38){
+							console.info("up按下");
+							
+							//飞机向上，则y要越来越小，则dy应该一个 负值
+							that.plane.dy = -3;
+							//up
+						}
+						else if (e.keyCode == 40){
+							//down
+							that.plane.dy = 3;
+						}
+						else if (e.keyCode == 37){
+							//left
+							that.plane.dx = -3; 
+						}
+						else if (e.keyCode == 39){
+							//Right
+							that.plane.dx = 3; 
+						}
+					});
+					
+					document.body.addEventListener("keyup",function(e){
+						if(e.keyCode == 38){
+							console.info("up放开");
+							
+							//飞机向上，则y要越来越小，则dy应该一个 负值
+							that.plane.dy = 0;
+							//up
+						}
+						else if (e.keyCode == 40){
+							//down
+							that.plane.dy = 0;
+						}
+						else if (e.keyCode == 37){
+							//left
+							that.plane.dx = 0;
+						}
+						else if (e.keyCode == 39){
+							//Right
+							that.plane.dx = 0;
+						}
+					})
+					
+				},
+				updatetime:function(){
+					//在游戏中显示时间
+					this.ctx.textAlign="center";
+					this.ctx.textBaseline = "middle";
+					this.ctx.font= "20px 微软雅黑";
+					var t = this.frameIndex * 40 / 1000;  // 由于frameIndex是每隔25ms加1,所以转成s
+					//转成s
+	  				this.ctx.fillText( t +"秒", 400,20);
+				
+				},
+				start:function(){
+					var that = this;
+					
+					///加载子弹
+					for(var i=0;i<this.bulletNumber;i++){
+						this.actor.push( new Bullet() )
+					}
+					
+					//加载飞机
+					this.actor.push( this.plane );
+					
+					this.addEvent();
+
+					setInterval(function(){
+						that.frameIndex++;
+
+						that.ctx.clearRect(0,0,500,500);//全部擦除
+						that.updatetime();
+						for(var i=0;i<that.actor.length;i++){
+							that.actor[i].move();
+						}
+						
+					},1000/25);
+				}
+				
+			}
+			
+		 	game.start();
+			
+//			var b1 = new Bullet();
+//			setInterval(function(){
+//				b1.move()
+//			},1000/25)
+		</script>
+	</body>
+</html>

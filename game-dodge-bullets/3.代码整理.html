@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style>
+			
+			
+			.circle1{
+				width:400px;
+				height:400px;
+				border:1px solid #000;
+			}
+			.circle2{
+				width:200px;
+				height:200px;
+				border:1px solid #000;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>canvas画圆</h1>
+		
+		<div class="circle circle1">
+			<!--<canvas id="can" width="200" height="200"></canvas>-->
+		</div>
+		
+		<div class="circle circle2">
+			<!--<canvas id="can" width="200" height="200"></canvas>-->
+		</div>
+		
+		<script type="text/javascript">
+			
+			
+			
+			
+			var c1 = new Circle(".circle1",{
+					maxX:88,			    //默认的百分比的进度 88%
+					frontColor:"#ff0000",   // 前景色 默认是红色 
+					backgroundColor:"#999", // 背景色 默认是红色
+					fontsize:20,			//默认字的大小
+					startDirection:"top",  //从3点方向开始，顺时针
+					linewidth:10,			//线条的粗细
+				});
+			var c1 = new Circle(".circle2",{
+					maxX:66,			    //默认的百分比的进度 88%
+					frontColor:"#00ff00",   // 前景色 默认是红色 
+					backgroundColor:"#000", // 背景色 默认是红色
+					fontsize:40,			//默认字的大小
+					startDirection:"left1",  //从3点方向开始，顺时针
+					linewidth:20,			//线条的粗细
+				});
+			
+			
+			
+
+//			ctx.strokeStyle="#0000ff";  //线条颜色
+//			ctx.beginPath();
+//			ctx.arc(100,75,50,0,2*Math.PI);
+//			ctx.stroke();
+//			
+//			
+//			ctx.font="20px 微软雅黑";
+//			ctx.fillText("Hello World!",10,50);
+
+		</script>
+	</body>
+</html>

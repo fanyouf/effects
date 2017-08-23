@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style>
+			
+			body{
+				background-color: #fff;
+			}
+			#can{
+				background-color: #333;
+				display: block;
+				margin:50px auto;
+			}
+		</style>
+	</head>
+	<body>
+		<canvas id="can" width="500" height="500">
+			
+		</canvas>
+		<script src="unit.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			function Bullet(){
+				
+				//让子弹先出现在左上角
+				
+				this.x = unit.r(50,100);	//坐标
+				this.y = unit.r(50,100);	//坐标
+				this.dx = unit.r(1,5)  ; //水平方向的速度
+				this.dy = unit.r(1,5)  ; //垂直方向的速度
+				this.r = 10;			//子弹的半径
+				
+				this.color = "rgb("+ unit.r(0,255)+","+unit.r(0,255)+","+unit.r(0,255)+")";
+			}
+			Bullet.prototype={
+				constructor:Bullet,
+				render : function(){
+					var can = document.getElementById("can");
+					var ctx = can.getContext("2d");
+					
+					ctx.clearRect(0,0,500,500);//全部擦除
+					ctx.beginPath();
+					ctx.arc(this.x,this.y,this.r,0,2*Math.PI);
+					ctx.closePath();
+					ctx.fillStyle= this.color;
+					ctx.fill();
+
+					//ctx.fill();
+				},
+				move:function(){
+					if(this.x > 500 || this.x < 0){
+						this.dx = -1*this.dx;
+						
+					}
+					if(this.y > 500 || this.y < 0){
+						this.dy = -1*this.dy;
+					}
+					this.x += this.dx;
+					this.y += this.dy;
+					
+					this.render();
+					
+				}
+			}
+			
+			var b1 = new Bullet();
+			setInterval(function(){
+				b1.move()
+			},1000/25)
+		</script>
+	</body>
+</html>
