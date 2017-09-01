@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		
+		<style>
+			
+			.slider{margin: 50px auto;}
+			.slider ul, .slider li{margin:0;padding:0;list-style: none;}
+			.slider{position: relative;overflow: hidden;}
+			.slider,.slider li {
+				width:300px;
+				height: 420px;
+				
+			}
+			.slider li{position: absolute;}
+			.slider li a,.slider li a img{display: block;width: 100%;height: 100%;}
+			.slider .slidercontent{width:100%;height:100%;overflow:hidden;}
+			.slider .btn{transition: all .5s; 
+			width: 50px;height: 50px;border-radius: 50%;
+			background-color: rgba(255,255,255,0.8);position: absolute;z-index:1;top:50%;
+			transform: translateY(-50%);}
+			.slider .btn:hover{background-color: rgba(255,255,255,1);cursor: pointer;}
+			.slider .btnleft{left:10px;}
+			.slider .btnright{right: 10px;}
+			.slider .btn:after,.slider .btn:before{
+				transition: all .5s;
+				content: "";
+				position: absolute;
+				top:50%;
+				transform: translateY(-50%);
+				width: 25px;
+				height: 3px;
+				left:15px;
+				background-color: rgba(255,0,0,1);
+			}
+			.slider .btnleft:after,.slider .btnleft:before{transform-origin: left center;}
+			.slider .btnleft:after{transform: rotateZ(45deg);}
+			.slider .btnleft:hover:after{transform: rotateZ(60deg);}
+			.slider .btnleft:before{transform: rotateZ(-45deg);}
+			.slider .btnleft:hover:before{transform: rotateZ(-60deg);}
+			
+			.slider .btnright:after,.slider .btnright:before{transform-origin: right center;}
+			.slider .btnright:after{transform: rotateZ(45deg);}
+			.slider .btnright:hover:after{transform: rotateZ(60deg);}
+			.slider .btnright:before{transform: rotateZ(-45deg);}
+			.slider .btnright:hover:before{transform: rotateZ(-60deg);}
+			.slider .txt p{line-height: 30px;margin:0;}
+			.slider .txt{height: 30px;position: absolute;left:0;right:0;bottom:0;background-color: rgba(0,0,0,.5);color:#fff;padding-left:20px;}
+			.slider .indirector{
+				position: absolute;left:0;right:20px;bottom:30px;
+				text-align: right;
+				
+			}
+			.slider .indirector span{
+				display: inline-block;
+				height: 3px;
+				width: 20px;
+				background-color: #ccc;
+				margin:3px;
+				
+			}
+			.slider .indirector span.current{
+				background-color: red;
+			}
+			
+			/*.fade-enter{opacity: 0;}
+			.fade-enter-active{transition: all 5s;}
+			
+			.fade-leave-to{opacity: 0;}
+			.fade-leave-active{transition: all 5s;}*/
+			
+			.right2left-enter{transform: translateX(300px);}
+			.right2left-enter-active{transition: all .5s;}
+			
+			.right2left-leave-to{transform: translateX(-300px);}
+			.right2left-leave-active{transition: all .5s;}
+			
+			.left2right-enter{transform: translateX(-300px);}
+			.left2right-enter-active{transition: all .5s;}
+			
+			.left2right-leave-to{transform: translateX(300px);}
+			.left2right-leave-active{transition: all .5s;}
+			
+			
+		</style>
+	</head>
+	<body>
+		
+		<template id="myslider">
+			<div class="slider">
+				<span class="btn btnleft"   @click="prev"></span>
+				<span class="btn btnright"  @click="next"></span>
+				<div class="slidercontent">
+					<ul>
+						<transition-group :name="dir" v-on:before-enter="moving=true" v-on:after-enter="moving=false">
+							<li v-for="(item,index) in imglist" :key="index" v-show="index == currentIndex">
+								<a href=""> 
+									<img :src="item.url" :alt="item.alt" />
+								</a>
+							</li>
+						</transition-group>
+					</ul>
+				</div>
+				<div class="txt" v-if="hastxt">
+					<p>{{imglist[currentIndex].alt}}</p>
+				</div>
+				<div class="indirector">
+					<span v-for="index in imglist.length" :class="{current:(index-1)==currentIndex}"></span>
+				</div>
+			</div>
+		</template>
+		<h2>轮播图</h2>
+		<div id="app">
+			<my-slider :imglist="imglist" :curindex="0"></my-slider>
+		</div>
+		
+		<script src="node_modules/vue/dist/vue.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			
+			//1.定义组件对象
+			let MySlider = {
+				template : "#myslider",
+				data:function(){
+					return {
+						moving:false,
+						dir:"left2right",
+						myIndex : this.curindex 
+						//轮播图的核心原理是不断地修改index值。注意，我们不能直接从父组件中传递过来的数据
+						//所以，我们要自己定义一个数据项。
+					}
+				},
+				computed:{
+					currentIndex:{
+					 //在设置myIndex的过程中，由于需要检测当前的动画完成了没有，所以采用set和get的方法
+					   get: function () {
+					      return this.myIndex;
+					   },
+					    set: function (newValue) {
+					      if(! this.moving){//如果有动画则不能修改
+					      	this.myIndex = (newValue+this.imglist.length)% this.imglist.length
+					      }
+					    }
+					}
+				},
+				props:{
+					imglist:{
+						type:Array
+					},
+					curindex:{
+						type:Number,
+						default:0
+					},
+					hastxt:{//是否有文字
+						type:Boolean,
+						default:true
+					}
+				},
+				methods:{
+					prev(){
+						this.currentIndex=this.currentIndex-1
+						this.dir = "right2left";
+					},
+					next(){
+						this.currentIndex=this.currentIndex+1
+						this.dir = "left2right";
+					}
+				}
+			}
+			
+			let vm = new Vue({
+				el:"#app",
+				data:{
+					imglist:[
+						{url:"img/1.The Shawshank Redemption.jpg",alt:"肖申克的救赎"},
+						{url:"img/2.Forrest Gump.jpg",alt:"阿甘正传"},
+						{url:"img/3.The Pursuit of Happyness.jpg",alt:"当幸福来敲来"},
+						{url:"img/4.这个杀手不太冷.jpg",alt:"这个杀手不太冷"},
+						{url:"img/5.WALL·E.jpg",alt:"机器人总动员"},
+						{url:"img/6.Hachiko.jpg",alt:"忠犬八公"}
+					]
+				},
+				components:{ //2.注册组件
+					MySlider
+				}
+			})
+		</script>
+	</body>
+</html>
