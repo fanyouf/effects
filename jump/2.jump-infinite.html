@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+		.block{
+			position: absolute;
+			width: 50px;
+			height: 50px;
+			background-color: black;
+			top:0px;
+		}
+		.line{
+			position: absolute;
+			width: 500px;
+			height: 5px;
+			background-color: green;
+			top:450px;
+		}
+	</style>
+</head>
+<body>
+	
+	<div id="block" class="block"></div>
+	<div class="line"></div>
+	<script>
+
+		var info = {
+			dir:"down",
+			t:0,
+			dt:0.2,
+			obj:document.getElementById("block"),
+			v0 :0,
+			g  :10,
+			y0  :0,
+			MaxY: 400,
+			uptime:1
+		}
+		function jump(){
+			info.t += info.dt;
+			if(info.dir == "down"){
+				let y =info.y0 +    1/2 * 10 * info.t * info.t ;
+				
+				if( y >= info.MaxY){
+					
+					info.dir = "up";
+					info.uptime++;
+					info.v0  = info.t * info.g * Math.pow(0.9,info.uptime);//能量损耗
+					console.info(info.v0,info.t)
+					info.t   = 0;
+					y = info.MaxY;
+					
+				}
+				info.obj.style.top = y +"px";
+			}
+			else if(info.dir == "up"){
+
+				
+				let y = info.MaxY - ( info.v0 * info.t - 1/2 * info.g * info.t *info.t );
+				
+				if(info.t >= info.v0/info.g){
+					console.info(info.t,y);
+					info.dir = "down";
+					info.t   = 0;
+					console.info(info)
+					info.y0 = y;
+				}
+
+				info.obj.style.top = y +"px";
+			}
+			
+
+		}
+		setInterval(function(){
+			jump();
+
+		},50)
+		
+	</script>
+</body>
+</html>
